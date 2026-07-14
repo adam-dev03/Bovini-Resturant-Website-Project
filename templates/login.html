@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Bovini Admin</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="login-page">
+
+  <div class="login-wrap">
+    <form class="login-card" method="POST" action="{{ url_for('login', next=request.args.get('next')) }}">
+      <img class="login-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="Bovini logo">
+      <h1>Bovini Admin</h1>
+      <p class="login-sub">Sign in to manage the menu</p>
+
+      {% if error %}
+      <div class="login-error">{{ error }}</div>
+      {% endif %}
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" autocomplete="username" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+      </div>
+
+      <button type="submit" class="btn primary" style="width:100%; justify-content:center;">Sign In</button>
+    </form>
+  </div>
+
+</body>
+</html>

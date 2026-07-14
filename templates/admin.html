@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bovini Admin</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Bovini logo">
+      <div>
+        <div class="name">BOVINI</div>
+        <div class="role">Admin Panel</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <button class="nav-item active" data-view="dashboard">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span class="label">Dashboard</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Manage</div>
+      <button class="nav-item" data-view="menu">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a2 2 0 0 1 2-2h8.5L20 7.5V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v4.5H20"/><path d="M8 12h8M8 16h5"/></svg>
+        <span class="label">Menu Items</span>
+      </button>
+      <button class="nav-item" data-view="reservations">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="9" cy="15" r="1"/></svg>
+        <span class="label">Reservations</span>
+      </button>
+      <button class="nav-item" data-view="info">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        <span class="label">Restaurant Info</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Account</div>
+      <button class="nav-item" data-view="settings">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        <span class="label">Settings</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="status-line">
+        <span class="status-dot" id="backendStatusDot"></span>
+        <span class="label" id="backendStatusLabel">Checking backend…</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="topbarTitle">Dashboard</h1>
+        <div class="subtitle" id="topbarSubtitle">An overview of the menu and recent changes</div>
+      </div>
+      <div class="topbar-actions" id="topbarActions">
+        <button class="btn gold" id="addItemBtn" style="display:none;">+ Add Dish</button>
+        <button class="btn gold" id="addReservationBtn" style="display:none;">+ New Reservation</button>
+        <div class="user-menu">
+          <button class="user-menu-btn" id="userMenuBtn">
+            <span class="avatar">{{ username[0]|upper }}</span>
+            {{ username }}
+          </button>
+          <div class="user-menu-dropdown" id="userMenuDropdown">
+            <a href="#" onclick="document.querySelector('[data-view=settings]').click(); document.getElementById('userMenuDropdown').classList.remove('open'); return false;">Settings</a>
+            <a href="{{ url_for('logout') }}" class="danger">Log out</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- DASHBOARD VIEW ---------- -->
+    <!-- ---------- DASHBOARD VIEW ---------- -->
+    <section class="view active" id="view-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Dishes</div>
+          <div class="stat-value" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Categories</div>
+          <div class="stat-value gold" id="statCategories">0</div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Recently added</h2>
+      <div class="panel">
+        <div class="panel-body" id="activityFeed"></div>
+      </div>
+    </section>
+
+    <!-- ---------- MENU VIEW ---------- -->
+    <section class="view" id="view-menu">
+      <div class="menu-toolbar">
+        <input type="text" class="menu-search" id="menuSearch" placeholder="Search dishes by name or description…">
+        <button class="filter-chip active" data-filter-category="all">All</button>
+        <button class="filter-chip" data-filter-category="0">Coffee & Breakfast</button>
+        <button class="filter-chip" data-filter-category="1">Mezze</button>
+        <button class="filter-chip" data-filter-category="2">Mains</button>
+        <button class="filter-chip" data-filter-category="3">Sweets</button>
+      </div>
+      <div id="menuCategories"></div>
+    </section>
+
+    <!-- ---------- RESERVATIONS VIEW ---------- -->
+    <section class="view" id="view-reservations">
+      <div id="reservationsList"></div>
+    </section>
+
+    <!-- ---------- RESTAURANT INFO VIEW ---------- -->
+    <section class="view" id="view-info">
+      <form class="info-form panel" id="infoForm">
+        <div class="panel-body" style="padding:24px;">
+          <div class="field">
+            <label for="infoAddress">Address</label>
+            <input type="text" id="infoAddress" placeholder="Street, building, Beirut, Lebanon">
+            <div class="field-hint placeholder-warn">Shown in the "Visit Us" section of the site.</div>
+          </div>
+          <div class="field">
+            <label for="infoHours">Hours</label>
+            <input type="text" id="infoHours" value="Daily · 8:00 AM – 12:00 AM">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="infoPhone">Phone</label>
+              <input type="tel" id="infoPhone" placeholder="+961 ...">
+            </div>
+            <div class="field">
+              <label for="infoEmail">Email</label>
+              <input type="email" id="infoEmail" placeholder="hello@bovini.com">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top:1px solid var(--border);">
+          <button type="submit" class="btn primary">Save Changes</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ---------- SETTINGS VIEW ---------- -->
+    <section class="view" id="view-settings">
+      <h2 class="section-title">Change password</h2>
+      <form class="panel" id="passwordForm" style="max-width:420px;">
+        <div class="panel-body" style="padding:24px;">
+          <div id="passwordFormError" class="login-error" style="display:none;"></div>
+          <div class="field">
+            <label for="currentPassword">Current password</label>
+            <input type="password" id="currentPassword" required>
+          </div>
+          <div class="field">
+            <label for="newPassword">New password</label>
+            <input type="password" id="newPassword" required minlength="6">
+            <div class="field-hint">At least 6 characters.</div>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top:1px solid var(--border);">
+          <button type="submit" class="btn primary">Update Password</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- ============================= ITEM MODAL ============================= -->
+  <div class="modal-backdrop" id="itemModalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Dish</h3>
+        <button class="modal-close" id="modalCloseBtn">✕</button>
+      </div>
+      <form id="itemForm">
+        <div class="modal-body">
+          <div class="field">
+            <label for="fieldName">Dish name</label>
+            <input type="text" id="fieldName" placeholder="e.g. Shish Taouk">
+          </div>
+          <div class="field">
+            <label for="fieldDesc">Description</label>
+            <textarea id="fieldDesc" placeholder="Short, appetizing, one line"></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="fieldPrice">Price (USD)</label>
+              <input type="number" id="fieldPrice" step="0.5" min="0" placeholder="0.00">
+            </div>
+            <div class="field">
+              <label for="fieldCategory">Category</label>
+              <select id="fieldCategory"></select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn ghost" id="modalCancelBtn">Cancel</button>
+          <button type="submit" class="btn primary">Save Dish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================= RESERVATION MODAL ============================= -->
+  <div class="modal-backdrop" id="reservationModalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="reservationModalTitle">New Reservation</h3>
+        <button class="modal-close" id="reservationModalCloseBtn">✕</button>
+      </div>
+      <form id="reservationForm">
+        <div class="modal-body">
+          <div class="field">
+            <label for="resName">Guest name</label>
+            <input type="text" id="resName" placeholder="e.g. Karim Saad" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="resPhone">Phone</label>
+              <input type="tel" id="resPhone" placeholder="+961 ..." required>
+            </div>
+            <div class="field">
+              <label for="resPartySize">Party size</label>
+              <input type="number" id="resPartySize" min="1" placeholder="2" required>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="resDate">Date</label>
+              <input type="date" id="resDate" required>
+            </div>
+            <div class="field">
+              <label for="resTime">Time</label>
+              <input type="time" id="resTime" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="resStatus">Status</label>
+            <select id="resStatus">
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="resNotes">Notes</label>
+            <textarea id="resNotes" placeholder="Allergies, occasion, seating preference…"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn ghost" id="reservationModalCancelBtn">Cancel</button>
+          <button type="submit" class="btn primary">Save Reservation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="{{ url_for('static', filename='admin.js') }}"></script>
+</body>
+</html>
