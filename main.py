@@ -1,3 +1,4 @@
+import json
 import secrets
 from functools import wraps
 from dataclasses import dataclass, asdict
@@ -7,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-app.secret_key = "d23039be98f9dc87a77a23f78abecb286e6be8bd99d46f60cd817db443cbff9c"
+app.secret_key = secrets.token_hex(32)
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD_HASH = generate_password_hash("bovini123")
@@ -144,6 +145,42 @@ def create_item():
     return jsonify(asdict(new_food.food)), 201
 
 
+@app.route('/api/menu/export', methods=['POST'])
+@login_required
+def export_menu_to_json():
+    with open("menu_items.json", "w") as file:
+        json.dump([asdict(item) for item in menu_options], file, indent=4)
+
+    return jsonify({"success": True, "count": len(menu_options)})
+
+
+@app.route('/api/menu/import', methods=['POST'])
+@login_required
+def json_to_menu():
+    global menu_options
+
+    try:
+        with open("menu_items.json", "r") as file:
+            raw_file = json.load(file)
+    except FileNotFoundError:
+        return jsonify({"error": "menu_items.json not found"}), 404
+    except json.JSONDecodeError:
+        return jsonify({"error": "menu_items.json is not valid JSON"}), 400
+
+    menu_options = [Food_struct(**item) for item in raw_file]
+
+    return jsonify({"success": True, "count": len(menu_options)})
+
+@app.route('/api/menu/apply', methods=['POST'])
+@login_required
+def apply_menu():
+    as_dict_menu = []
+    for i in range(len(menu_options)):
+        as_dict_menu.append(asdict(menu_options[i]))
+
+    return jsonify(as_dict_menu)
+
+
 @app.route('/api/menu/<name>', methods=['PUT'])
 @login_required
 def update_item(name):
@@ -278,4 +315,4 @@ def delete_reservation(reservation_id):
 
 
 if __name__ == '__main__':
-       app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run(debug=True)

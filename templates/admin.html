@@ -67,6 +67,8 @@
       </div>
       <div class="topbar-actions" id="topbarActions">
         <button class="btn gold" id="addItemBtn" style="display:none;">+ Add Dish</button>
+        <button class="btn ghost" id="exportMenuBtn" style="display:none;">Export to JSON</button>
+        <button class="btn ghost" id="importMenuBtn" style="display:none;">Import from JSON</button>
         <button class="btn gold" id="addReservationBtn" style="display:none;">+ New Reservation</button>
         <div class="user-menu">
           <button class="user-menu-btn" id="userMenuBtn">
@@ -125,17 +127,17 @@
         <div class="panel-body" style="padding:24px;">
           <div class="field">
             <label for="infoAddress">Address</label>
-            <input type="text" id="infoAddress" placeholder="Street, building, Beirut, Lebanon">
+            <input type="text" id="infoAddress" placeholder="Al Marakib St, Al Danah, Zone 1, Abu Dhabi, UAE">
             <div class="field-hint placeholder-warn">Shown in the "Visit Us" section of the site.</div>
           </div>
           <div class="field">
             <label for="infoHours">Hours</label>
-            <input type="text" id="infoHours" value="Daily · 8:00 AM – 12:00 AM">
+            <input type="text" id="infoHours" value="Daily · 10:00 AM – 9:30 PM">
           </div>
           <div class="field-row">
             <div class="field">
               <label for="infoPhone">Phone</label>
-              <input type="tel" id="infoPhone" placeholder="+961 ...">
+              <input type="tel" id="infoPhone" placeholder="+971 2 622 9440">
             </div>
             <div class="field">
               <label for="infoEmail">Email</label>
@@ -224,7 +226,7 @@
           <div class="field-row">
             <div class="field">
               <label for="resPhone">Phone</label>
-              <input type="tel" id="resPhone" placeholder="+961 ..." required>
+              <input type="tel" id="resPhone" placeholder="+971 5X XXX XXXX" required>
             </div>
             <div class="field">
               <label for="resPartySize">Party size</label>

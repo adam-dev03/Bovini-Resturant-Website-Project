@@ -40,6 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
   wirePasswordForm();
   wireMenuToolbar();
   wireReservationModal();
+  wireExportButton();
+  wireImportButton();
   populateCategorySelect();
   loadMenu();
   loadReservations();
@@ -55,6 +57,8 @@ function wireNav() {
   const topbarSubtitle = document.getElementById("topbarSubtitle");
   const addItemBtn = document.getElementById("addItemBtn");
   const addReservationBtn = document.getElementById("addReservationBtn");
+  const exportMenuBtn = document.getElementById("exportMenuBtn");
+  const importMenuBtn = document.getElementById("importMenuBtn");
 
   const titles = {
     dashboard: ["Dashboard", "An overview of the menu and recent changes"],
@@ -72,6 +76,8 @@ function wireNav() {
       topbarTitle.textContent = titles[target][0];
       topbarSubtitle.textContent = titles[target][1];
       addItemBtn.style.display = target === "menu" ? "inline-flex" : "none";
+      exportMenuBtn.style.display = target === "menu" ? "inline-flex" : "none";
+      importMenuBtn.style.display = target === "menu" ? "inline-flex" : "none";
       addReservationBtn.style.display = target === "reservations" ? "inline-flex" : "none";
       if (target === "dashboard") renderDashboard();
     });
@@ -553,4 +559,67 @@ async function handleDeleteReservation(id) {
   } catch (err) {
     toast("Couldn't delete the reservation", "danger");
   }
+}
+
+/* ---------------------------------------------------------------------- */
+/* EXPORT MENU TO JSON — POST /api/menu/export                            */
+/* ---------------------------------------------------------------------- */
+function wireExportButton() {
+  const btn = document.getElementById("exportMenuBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "Exporting…";
+
+    try {
+      const res = await fetch("/api/menu/export", { method: "POST" });
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Export failed");
+      toast(`Exported ${body.count} dish${body.count === 1 ? "" : "es"} to menu_items.json`);
+    } catch (err) {
+      toast("Couldn't export the menu — check the /api/menu/export route on the backend", "danger");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+}
+
+/* ---------------------------------------------------------------------- */
+/* IMPORT MENU FROM JSON — POST /api/menu/import                          */
+/* ---------------------------------------------------------------------- */
+function wireImportButton() {
+  const btn = document.getElementById("importMenuBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    if (!confirm("This replaces the current menu with whatever is saved in menu_items.json. Continue?")) return;
+
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "Importing…";
+
+    try {
+      const res = await fetch("/api/menu/import", { method: "POST" });
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Import failed");
+      toast(`Imported ${body.count} dish${body.count === 1 ? "" : "es"} from menu_items.json`);
+      await loadMenu();
+    } catch (err) {
+      toast(err.message || "Couldn't import the menu", "danger");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
 }

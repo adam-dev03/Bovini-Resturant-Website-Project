@@ -161,75 +161,54 @@
     <img class="hero-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="Bovini logo">
     <div class="eyebrow ar">بوفيني</div>
     <h1>BOVINI</h1>
-    <div class="tagline">Restaurant &amp; Café · Beirut</div>
+    <div class="tagline">Restaurant &amp; Café · Abu Dhabi</div>
     <p class="sub">A table built around slow mornings, shared plates, and the kind of hospitality that starts with your name and ends with a second coffee.</p>
   </section>
 
   <section class="story" id="story">
     <div>
       <div class="eyebrow-tag">Our Story</div>
-      <h2>Rooted in Beirut, set&nbsp;at the corner table.</h2>
-      <p>Bovini opened as a restaurant and café that didn't want to choose between the two. Mornings belong to slow coffee and warm bread; evenings turn toward shared plates, wood-fired flavor, and a room that stays lively past midnight.</p>
-      <div class="ar-line ar">مطعم ومقهى بروح بيروتية أصيلة</div>
+      <h2>An Italian chef, a Lebanese kitchen, one table.</h2>
+      <p>Bovini was born from a partnership between an Italian chef and his Lebanese wife, whose family recipes shaped the kitchen as much as his years training across Italy did. Alongside a close friend and business partner, they opened a small spot on Abu Dhabi's Corniche where both culinary traditions could sit at the same table — Italian technique, Lebanese warmth, and nothing lost in translation between them.</p>
+      <div class="ar-line ar">مزيج فريد من النكهات الإيطالية واللبنانية</div>
     </div>
     <div class="story-frame">
-      <img src="{{ url_for('static', filename='images/storefront.png') }}" alt="Bovini restaurant storefront and menu highlights">
+      <img src="{{ url_for('static', filename='images/storefront.png') }}" alt="Bovini restaurant storefront">
     </div>
   </section>
 
   <section class="menu-section" id="menu">
     <div class="eyebrow-tag">The Menu</div>
-    <h2>A short list, kept honest.</h2>
-    <p class="menu-intro">Seasonal, subject to change, and deliberately not too long — everything on it is something we'd order twice.</p>
-
-    <div class="menu-grid">
-      <div class="menu-cat">
-        <h3>Coffee &amp; Breakfast</h3>
-        <span class="cat-ar ar">القهوة والفطور</span>
-        <div class="menu-item"><div><span class="name">Bovini Breakfast</span><span class="desc">Eggs your way, labneh, olives, za'atar bread</span></div><span class="price">$9</span></div>
-        <div class="menu-item"><div><span class="name">Manakish Trio</span><span class="desc">Za'atar, cheese, spiced beef — baked to order</span></div><span class="price">$8</span></div>
-      </div>
-      <div class="menu-cat">
-        <h3>Mezze to Share</h3>
-        <span class="cat-ar ar">المقبلات</span>
-        <div class="menu-item"><div><span class="name">Hummus Bovini</span><span class="desc">Whipped chickpea, brown butter, pine nuts</span></div><span class="price">$7</span></div>
-        <div class="menu-item"><div><span class="name">Grilled Halloumi</span><span class="desc">Wild honey, chili, toasted sesame</span></div><span class="price">$9</span></div>
-      </div>
-      <div class="menu-cat">
-        <h3>Wood-Fired Mains</h3>
-        <span class="cat-ar ar">الأطباق الرئيسية</span>
-        <div class="menu-item"><div><span class="name">Shish Taouk</span><span class="desc">Charcoal chicken, garlic whip, pickles</span></div><span class="price">$16</span></div>
-        <div class="menu-item"><div><span class="name">Bovini Flatbread</span><span class="desc">Slow-roasted tomato, burrata, basil oil</span></div><span class="price">$14</span></div>
-      </div>
-      <div class="menu-cat">
-        <h3>Sweet Endings</h3>
-        <span class="cat-ar ar">الحلويات</span>
-        <div class="menu-item"><div><span class="name">Knafeh Bites</span><span class="desc">Crisp kataifi, sweet cheese, rose syrup</span></div><span class="price">$8</span></div>
-        <div class="menu-item"><div><span class="name">Affogato</span><span class="desc">House espresso poured over gelato</span></div><span class="price">$7</span></div>
-      </div>
-    </div>
+    <h2>Italian craft, Lebanese soul.</h2>
+    <p class="menu-intro">Bovini's kitchen blends Italian technique with Lebanese hospitality — wood-fired pizza, handmade pasta, and mezze made the way our founders learned them at home. The full menu is available in-house and changes with the season, so we're keeping this page free of a fixed list rather than posting dishes that might not be on the table when you visit.</p>
   </section>
 
   <section class="visit" id="visit">
     <div class="visit-info">
       <div class="eyebrow-tag">Visit Us</div>
       <h2>Come sit with us.</h2>
-      <div class="row"><div class="label">Address</div><div class="value small">[Street, Building — add your exact address], Beirut, Lebanon</div></div>
-      <div class="row"><div class="label">Hours</div><div class="value small">Daily · 8:00 AM – 12:00 AM</div></div>
-      <div class="row"><div class="label">Reservations</div><div class="value small">[Add phone number] · [Add email]</div></div>
+      <div class="row"><div class="label">Address</div><div class="value small">Al Marakib St, Al Danah, Zone 1, Abu Dhabi, UAE</div></div>
+      <div class="row"><div class="label">Hours</div><div class="value small">Daily · 10:00 AM – 9:30 PM</div></div>
+      <div class="row"><div class="label">Reservations</div><div class="value small">+971 2 622 9440</div></div>
       <div class="cta-row">
-        <a href="#visit" class="btn primary">Reserve a Table</a>
+        <a href="tel:+97126229440" class="btn primary">Call to Reserve</a>
       </div>
     </div>
     <div class="map-card">
-      <div class="map-pin"><div class="dot"></div><span>Beirut, Lebanon</span></div>
+      <iframe
+        src="https://maps.google.com/maps?q=24.4909515,54.3556376&z=16&output=embed"
+        style="border:0; width:100%; height:100%;"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Bovini Restaurant & Cafe location on the map">
+      </iframe>
     </div>
   </section>
 
   <footer class="site-footer">
     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Bovini logo">
     <div>BOVINI Restaurant &amp; Café</div>
-    <p>© 2026 Bovini. Beirut, Lebanon.</p>
+    <p>© 2026 Bovini. Abu Dhabi, UAE.</p>
   </footer>
 
   <script>
