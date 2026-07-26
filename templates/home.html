@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}BOVINI — Restaurant &amp; Café{% endblock %}
+
+{% block content %}
+  <section class="hero">
+    <div class="hero-ring r1"></div>
+    <div class="hero-ring r2"></div>
+    <div class="hero-ring r3"></div>
+    <img class="hero-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="Bovini logo">
+    <div class="eyebrow ar">بوفيني</div>
+    <h1>BOVINI</h1>
+    <div class="tagline">Restaurant &amp; Café · Abu Dhabi</div>
+    <p class="sub">A table built around slow mornings, shared plates, and the kind of hospitality that starts with your name and ends with a second coffee.</p>
+    <div class="cta-row">
+      <a href="{{ url_for('menu_page') }}" class="btn primary">View Menu</a>
+      <a href="{{ url_for('reservations_page') }}" class="btn gold">Reserve a Table</a>
+    </div>
+  </section>
+{% endblock %}

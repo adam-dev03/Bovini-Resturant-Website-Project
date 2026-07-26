@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Reservations — BOVINI{% endblock %}
+
+{% block content %}
+  <section class="page-hero">
+    <div class="eyebrow-tag">Reservations</div>
+    <h1>Save your table.</h1>
+    <p class="sub">Give us a call and we'll have a table ready.</p>
+  </section>
+
+  <section class="visit">
+    <div class="visit-info">
+      <div class="eyebrow-tag">Visit Us</div>
+      <h2>Come sit with us.</h2>
+      <div class="row"><div class="label">Address</div><div class="value small">Al Marakib St, Al Danah, Zone 1, Abu Dhabi, UAE</div></div>
+      <div class="row"><div class="label">Hours</div><div class="value small">Daily · 10:00 AM – 9:30 PM</div></div>
+      <div class="row"><div class="label">Reservations</div><div class="value small">+971 2 622 9440</div></div>
+      <div class="cta-row">
+        <a href="tel:+97126229440" class="btn primary">Call to Reserve</a>
+      </div>
+    </div>
+    <div class="map-card">
+      <iframe
+        src="https://maps.google.com/maps?q=24.4909515,54.3556376&z=16&output=embed"
+        style="border:0; width:100%; height:100%;"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Bovini Restaurant & Cafe location on the map">
+      </iframe>
+    </div>
+  </section>
+{% endblock %}

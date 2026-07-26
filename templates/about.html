@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}About Us — BOVINI{% endblock %}
+
+{% block content %}
+  <section class="page-hero">
+    <div class="eyebrow-tag">About Bovini</div>
+    <h1>Two traditions, one table.</h1>
+    <p class="sub">Italian technique, Lebanese warmth — the story behind our kitchen on Abu Dhabi's Corniche.</p>
+  </section>
+
+  <section class="story">
+    <div>
+      <div class="eyebrow-tag">Our Story</div>
+      <h2>An Italian chef, a Lebanese kitchen, one table.</h2>
+      <p>Bovini was born from a partnership between an Italian chef and his Lebanese wife, whose family recipes shaped the kitchen as much as his years training across Italy did. Alongside a close friend and business partner, they opened a small spot on Abu Dhabi's Corniche where both culinary traditions could sit at the same table — Italian technique, Lebanese warmth, and nothing lost in translation between them.</p>
+      <div class="ar-line ar">مزيج فريد من النكهات الإيطالية واللبنانية</div>
+    </div>
+    <div class="story-frame">
+      <img src="{{ url_for('static', filename='images/storefront.png') }}" alt="Bovini restaurant storefront">
+    </div>
+  </section>
+{% endblock %}

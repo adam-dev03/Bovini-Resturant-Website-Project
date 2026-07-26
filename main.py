@@ -47,10 +47,21 @@ class Reservation:
     status: str = "pending"
 
 
+@dataclass
+class Cart_struct:
+    name: str
+    description: str
+    price: int
+    category: str
+
+
 reservations = []
 next_reservation_id = 1
 
+cart = []
+
 did_it_succeed = True
+did_cart_succeed = True
 
 
 class Food:
@@ -86,9 +97,54 @@ class Food:
             did_it_succeed = True
 
 
+class Cart:
+
+    def __init__(self, name, description, price, category):
+        self.name = name
+        self.description = description
+        self.price = price
+        self.category = category
+
+        self.item = Cart_struct(self.name, self.description, self.price, self.category)
+
+    def append(self):
+        global did_cart_succeed
+        if not self.name or not self.description or self.price is None or self.category is None:
+            did_cart_succeed = False
+        else:
+            did_cart_succeed = True
+            cart.append(self.item)
+
+    def remove(self):
+        global did_cart_succeed
+        index = None
+        for i in range(len(cart)):
+            if cart[i].name == self.name:
+                index = i
+                break
+
+        if index is None:
+            did_cart_succeed = False
+        else:
+            cart.pop(index)
+            did_cart_succeed = True
+
+
 @app.route('/')
 def home():
-    return render_template('bovini_site.html')
+    return render_template('home.html', is_home=True, active_page='home')
+
+@app.route('/about')
+def about():
+    return render_template('about.html', is_home=False, active_page='about')
+
+@app.route('/menu')
+def menu_page():
+    return render_template('menu.html', is_home=False, active_page='menu', items=menu_options)
+
+@app.route('/reservations')
+def reservations_page():
+    return render_template('reservations.html', is_home=False, active_page='reservations')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -179,6 +235,62 @@ def apply_menu():
         as_dict_menu.append(asdict(menu_options[i]))
 
     return jsonify(as_dict_menu)
+
+
+@app.route('/api/menu/public', methods=['GET'])
+def get_menu_public():
+    return jsonify([asdict(item) for item in menu_options])
+
+
+@app.route('/api/cart', methods=['GET'])
+def view_cart():
+    return jsonify([asdict(item) for item in cart])
+
+
+@app.route('/api/cart', methods=['POST'])
+def add_to_cart():
+    data = request.get_json(silent=True) or {}
+
+    new_item = Cart(
+        name=data.get('name'),
+        description=data.get('description'),
+        price=data.get('price'),
+        category=data.get('category'),
+    )
+    new_item.append()
+
+    if not did_cart_succeed:
+        return jsonify({"error": "name, description, price, and category are all required"}), 400
+
+    return jsonify(asdict(new_item.item)), 201
+
+
+@app.route('/api/cart/<name>', methods=['DELETE'])
+def remove_from_cart(name):
+    remover = Cart(name=name, description="placeholder", price=0, category="placeholder")
+    remover.remove()
+
+    if not did_cart_succeed:
+        return jsonify({"error": "item not in cart"}), 404
+
+    return jsonify({"success": True})
+
+
+@app.route('/api/cart/clear', methods=['POST'])
+def clear_cart():
+    cart.clear()
+    return jsonify({"success": True})
+
+@app.route('/api/cart/order', methods=['GET'])
+def order_cart():
+    original_whatsapp_url = 'https://wa.me/'
+    order_items = ''
+    phone_number = '97126229440'
+    for i in range(len(cart)):
+        order_items += cart[i].name
+        order_items += '-'
+    original_whatsapp_url = f"https://wa.me/{phone_number}?text=Hi%2C%20I%27d%20like%20to%20order:{order_items}"
+    return redirect(original_whatsapp_url)
 
 
 @app.route('/api/menu/<name>', methods=['PUT'])

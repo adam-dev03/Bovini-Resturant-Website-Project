@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}BOVINI — Restaurant &amp; Café{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <header id="siteHeader"{% if not is_home %} class="solid"{% endif %}>
+    <div class="brand">
+      <a href="{{ url_for('home') }}" style="display:flex; align-items:center; gap:12px;">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Bovini logo">
+        <span>BOVINI</span>
+      </a>
+    </div>
+    <nav class="links">
+      <a href="{{ url_for('home') }}" class="{% if active_page == 'home' %}current{% endif %}">Home</a>
+      <a href="{{ url_for('about') }}" class="{% if active_page == 'about' %}current{% endif %}">About Us</a>
+      <a href="{{ url_for('menu_page') }}" class="{% if active_page == 'menu' %}current{% endif %}">Menu</a>
+      <a href="{{ url_for('reservations_page') }}" class="{% if active_page == 'reservations' %}current{% endif %}">Reservations</a>
+    </nav>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer class="site-footer">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Bovini logo">
+    <div>BOVINI Restaurant &amp; Café</div>
+    <div class="footer-links">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('about') }}">About Us</a>
+      <a href="{{ url_for('menu_page') }}">Menu</a>
+      <a href="{{ url_for('reservations_page') }}">Reservations</a>
+    </div>
+    <p>© 2026 Bovini. Abu Dhabi, UAE.</p>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      document.getElementById('siteHeader').classList.toggle('scrolled', window.scrollY > 40);
+    });
+  </script>
+  {% block extra_script %}{% endblock %}
+
+</body>
+</html>
