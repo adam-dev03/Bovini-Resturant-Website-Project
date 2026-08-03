@@ -2,6 +2,7 @@ import json
 import secrets
 from functools import wraps
 from dataclasses import dataclass, asdict
+from urllib.parse import quote
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -25,6 +26,22 @@ def login_required(f):
     return wrapped
 
 menu_options = []
+
+# Must match the CATEGORIES list in static/admin.js — category on Food_struct
+# is stored as an int index into this list, not a name.
+CATEGORIES = [
+    {"id": 0, "name": "Coffee & Breakfast"},
+    {"id": 1, "name": "Mezze to Share"},
+    {"id": 2, "name": "Wood-Fired Mains"},
+    {"id": 3, "name": "Sweet Endings"},
+]
+
+
+def category_name(category_id):
+    for c in CATEGORIES:
+        if c["id"] == category_id:
+            return c["name"]
+    return "Uncategorized"
 
 
 @dataclass
@@ -140,7 +157,23 @@ def about():
 
 @app.route('/menu')
 def menu_page():
-    return render_template('menu.html', is_home=False, active_page='menu', items=menu_options)
+    display_items = [
+        {
+            "name": item.name,
+            "description": item.description,
+            "price": item.price,
+            "category_id": item.category,
+            "category_name": category_name(item.category),
+        }
+        for item in menu_options
+    ]
+    return render_template(
+        'menu.html',
+        is_home=False,
+        active_page='menu',
+        items=display_items,
+        categories=CATEGORIES,
+    )
 
 @app.route('/reservations')
 def reservations_page():
@@ -281,6 +314,7 @@ def clear_cart():
     cart.clear()
     return jsonify({"success": True})
 
+
 @app.route('/api/cart/order', methods=['GET'])
 def order_cart():
     original_whatsapp_url = 'https://wa.me/'
@@ -289,7 +323,8 @@ def order_cart():
     for i in range(len(cart)):
         order_items += cart[i].name
         order_items += '-'
-    original_whatsapp_url = f"https://wa.me/{phone_number}?text=Hi%2C%20I%27d%20like%20to%20order:{order_items}"
+    original_whatsapp_url = f"https://wa.me/{phone_number}?text=Hi%2C%20I%27d%20like%20to%20order:{quote(order_items)}"
+    print(original_whatsapp_url)
     return redirect(original_whatsapp_url)
 
 

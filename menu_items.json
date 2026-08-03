@@ -4,5 +4,11 @@
         "description": "133",
         "price": 133,
         "category": 0
+    },
+    {
+        "name": "Shish tawouk",
+        "description": "crispy and yummy",
+        "price": 13,
+        "category": 2
     }
 ]

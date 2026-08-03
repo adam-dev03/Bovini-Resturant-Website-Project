@@ -11,32 +11,46 @@
   <section class="menu-section">
     <div class="eyebrow-tag">The Menu</div>
     <h2>Italian craft, Lebanese soul.</h2>
-    <p class="menu-intro">Bovini's kitchen blends Italian technique with Lebanese hospitality — wood-fired pizza, handmade pasta, and mezze made the way our founders learned them at home. Add anything below to build your order, then head to Reservations to book a table for it.</p>
+    <p class="menu-intro">Bovini's kitchen blends Italian technique with Lebanese hospitality — wood-fired pizza, handmade pasta, and mezze made the way our founders learned them at home. Tap a dish to see the full details, or add it straight to your order.</p>
 
     {% if items %}
+    <div class="cat-filter-row">
+      <button class="cat-filter-btn active" data-filter-category="all">All</button>
+      {% for cat in categories %}
+      <button class="cat-filter-btn" data-filter-category="{{ cat.id }}">{{ cat.name }}</button>
+      {% endfor %}
+    </div>
+
     <div class="menu-grid">
-      {% for category, group in items|groupby('category') %}
-      <div class="menu-cat">
-        <h3>{{ category }}</h3>
-        {% for item in group %}
-        <div class="menu-item">
-          <div>
-            <span class="name">{{ item.name }}</span>
-            <span class="desc">{{ item.description }}</span>
+      {% for cat in categories %}
+        {% set cat_items = items|selectattr('category_id', 'equalto', cat.id)|list %}
+        {% if cat_items %}
+        <div class="menu-cat" data-category="{{ cat.id }}">
+          <h3>{{ cat.name }}</h3>
+          {% for item in cat_items %}
+          <div class="menu-item menu-item-clickable"
+               data-name="{{ item.name }}"
+               data-description="{{ item.description }}"
+               data-price="{{ item.price }}"
+               data-category="{{ item.category_name }}">
+            <div>
+              <span class="name">{{ item.name }}</span>
+              <span class="desc">{{ item.description }}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:14px;">
+              <span class="price">AED {{ item.price }}</span>
+              <button
+                class="btn gold sm add-to-cart-btn"
+                data-name="{{ item.name }}"
+                data-description="{{ item.description }}"
+                data-price="{{ item.price }}"
+                data-category="{{ item.category_name }}"
+                style="padding:9px 18px; font-size:11px;">Add</button>
+            </div>
           </div>
-          <div style="display:flex; align-items:center; gap:14px;">
-            <span class="price">AED {{ item.price }}</span>
-            <button
-              class="btn gold sm add-to-cart-btn"
-              data-name="{{ item.name }}"
-              data-description="{{ item.description }}"
-              data-price="{{ item.price }}"
-              data-category="{{ item.category }}"
-              style="padding:9px 18px; font-size:11px;">Add</button>
-          </div>
+          {% endfor %}
         </div>
-        {% endfor %}
-      </div>
+        {% endif %}
       {% endfor %}
     </div>
     {% else %}
@@ -44,100 +58,99 @@
     {% endif %}
   </section>
 
-  <section class="visit" id="cart-section" style="grid-template-columns:1fr;">
-    <div>
-      <div class="eyebrow-tag">Your Order</div>
-      <h2>Cart</h2>
-      <div id="cartEmpty" class="menu-intro" style="color:#4a4a42;">Your cart is empty — add a dish above to get started.</div>
-      <div id="cartList" style="margin-top:30px;"></div>
-      <div id="cartTotalRow" style="display:none; margin-top:20px; padding-top:20px; border-top:1px solid rgba(14,63,102,0.15); justify-content:space-between; align-items:center;">
-        <span style="font-size:18px; font-weight:600; color:var(--navy-deep);">Total: AED <span id="cartTotal">0</span></span>
+  <!-- Menu item detail popup -->
+  <div class="modal-overlay" id="itemModalOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="itemModalClose" aria-label="Close">&times;</button>
+      <div class="eyebrow-tag" id="itemModalCategory">Category</div>
+      <h2 id="itemModalName">Dish name</h2>
+      <p class="menu-intro" id="itemModalDescription" style="color:#4a4a42; margin-top:16px;"></p>
+      <div style="margin-top:26px; font-size:24px; font-weight:600; color:var(--navy-deep);">
+        AED <span id="itemModalPrice">0</span>
       </div>
-      <div class="cta-row">
-        <a href="{{ url_for('reservations_page') }}" class="btn primary">Reserve a Table</a>
-        <button id="orderWhatsappBtn" class="btn gold">Order via WhatsApp</button>
-        <button id="clearCartBtn" class="btn" style="background:transparent; border:1px solid var(--navy); color:var(--navy);">Clear Cart</button>
+      <div class="cta-row" style="margin-top:30px;">
+        <button id="itemModalAddBtn" class="btn gold">Add to Cart</button>
       </div>
     </div>
-  </section>
+  </div>
 {% endblock %}
 
 {% block extra_script %}
 <script>
-  const cartEmpty = document.getElementById('cartEmpty');
-  const cartList = document.getElementById('cartList');
-  const cartTotalRow = document.getElementById('cartTotalRow');
-  const cartTotal = document.getElementById('cartTotal');
+  /* ---------- Menu item detail popup ---------- */
+  const itemModalOverlay = document.getElementById('itemModalOverlay');
+  const itemModalCategory = document.getElementById('itemModalCategory');
+  const itemModalName = document.getElementById('itemModalName');
+  const itemModalDescription = document.getElementById('itemModalDescription');
+  const itemModalPrice = document.getElementById('itemModalPrice');
+  const itemModalAddBtn = document.getElementById('itemModalAddBtn');
+  let activeItem = null;
 
-  async function loadCart() {
-    const res = await fetch('/api/cart');
-    const items = await res.json();
-    renderCart(items);
+  function openItemModal(data) {
+    activeItem = data;
+    itemModalCategory.textContent = data.category;
+    itemModalName.textContent = data.name;
+    itemModalDescription.textContent = data.description;
+    itemModalPrice.textContent = data.price;
+    itemModalOverlay.classList.add('open');
+  }
+  function closeItemModal() {
+    itemModalOverlay.classList.remove('open');
   }
 
-  function renderCart(items) {
-    if (!items.length) {
-      cartEmpty.style.display = 'block';
-      cartList.innerHTML = '';
-      cartTotalRow.style.display = 'none';
-      return;
-    }
-    cartEmpty.style.display = 'none';
-    cartTotalRow.style.display = 'flex';
+  document.querySelectorAll('.menu-item-clickable').forEach(row => {
+    row.style.cursor = 'pointer';
+    row.addEventListener('click', () => openItemModal(row.dataset));
+  });
 
-    let total = 0;
-    cartList.innerHTML = items.map(item => {
-      total += Number(item.price) || 0;
-      return `
-        <div class="menu-item">
-          <div>
-            <span class="name">${item.name}</span>
-            <span class="desc">${item.description}</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:14px;">
-            <span class="price" style="color:var(--gold);">AED ${item.price}</span>
-            <button class="remove-from-cart-btn" data-name="${item.name}"
-              style="background:none; border:none; color:var(--navy); font-size:12px; text-decoration:underline; cursor:pointer;">
-              Remove
-            </button>
-          </div>
-        </div>`;
-    }).join('');
-    cartTotal.textContent = total;
+  document.getElementById('itemModalClose').addEventListener('click', closeItemModal);
+  itemModalOverlay.addEventListener('click', (e) => {
+    if (e.target === itemModalOverlay) closeItemModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeItemModal();
+  });
+
+  itemModalAddBtn.addEventListener('click', async () => {
+    if (!activeItem) return;
+    await addItemToCart(activeItem);
+    closeItemModal();
+  });
+
+  /* ---------- Add to cart (from row button, stops the row's own click) ---------- */
+  async function addItemToCart(data) {
+    await fetch('/api/cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: data.name,
+        description: data.description,
+        price: Number(data.price),
+        category: data.category,
+      }),
+    });
+    if (window.refreshHeaderCartCount) window.refreshHeaderCartCount();
+    if (window.loadCartModal) window.loadCartModal();
   }
 
   document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      await fetch('/api/cart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: btn.dataset.name,
-          description: btn.dataset.description,
-          price: Number(btn.dataset.price),
-          category: btn.dataset.category,
-        }),
-      });
-      loadCart();
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await addItemToCart(btn.dataset);
     });
   });
 
-  cartList.addEventListener('click', async (e) => {
-    if (!e.target.classList.contains('remove-from-cart-btn')) return;
-    const name = e.target.dataset.name;
-    await fetch(`/api/cart/${encodeURIComponent(name)}`, { method: 'DELETE' });
-    loadCart();
-  });
+  /* ---------- Category filter ---------- */
+  document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-  document.getElementById('clearCartBtn').addEventListener('click', async () => {
-    await fetch('/api/cart/clear', { method: 'POST' });
-    loadCart();
+      const filter = btn.dataset.filterCategory;
+      document.querySelectorAll('.menu-cat').forEach(block => {
+        block.style.display = (filter === 'all' || block.dataset.category === filter) ? '' : 'none';
+      });
+    });
   });
-
-  document.getElementById('orderWhatsappBtn').addEventListener('click', () => {
-    window.open('/api/cart/order', '_blank');
-  });
-
-  loadCart();
 </script>
 {% endblock %}
